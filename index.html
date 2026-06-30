@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buckeye Imagination Museum — Mission Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14213D; --ink-2:#1F2D52; --ink-soft:#2c3b63;
+  --paper:#FFFFFF; --bg:#EEF1F8; --panel:#FFFFFF;
+  --muted:#5B6478; --muted-2:#8a93a7; --line:#E2E7F0; --line-2:#eef1f7;
+  --amber:#F4A322; --blue:#2F80ED; --purple:#7C5CBF; --green:#1FA97A; --coral:#FF6B4A;
+  --green-bg:#e7f7f0; --amber-bg:#fdf2dc; --coral-bg:#ffe9e3; --blue-bg:#e8f1fd;
+  --shadow:0 1px 3px rgba(20,33,61,.06),0 8px 24px rgba(20,33,61,.06);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);background:var(--bg);line-height:1.55;font-size:15.5px;}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- Layout ---------- */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:286px;flex:0 0 286px;background:var(--ink);color:#dfe5f2;
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 0 30px;}
+.brand{padding:22px 22px 16px;border-bottom:1px solid rgba(255,255,255,.08);position:relative}
+.brand .gear{position:absolute;right:-16px;top:-14px;opacity:.10;color:#fff}
+.brand .gear.two{right:30px;top:34px;width:46px;height:46px;opacity:.07}
+.brand h1{font-family:'Fraunces',serif;font-size:18px;line-height:1.25;margin:0;color:#fff;font-weight:600;letter-spacing:.2px}
+.brand .sub{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#8ea0c9;margin-top:8px;font-weight:600}
+.searchwrap{padding:14px 16px 6px}
+#nav-search{width:100%;background:#0d1730;border:1px solid rgba(255,255,255,.12);color:#fff;
+  border-radius:9px;padding:9px 12px;font-size:13.5px;outline:none}
+#nav-search::placeholder{color:#7585a8}
+#nav-search:focus{border-color:var(--amber)}
+.nav-group{padding:10px 12px 2px}
+.nav-label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#6f7fa6;padding:8px 10px 6px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;cursor:pointer;
+  color:#cdd6ea;font-size:14px;font-weight:500;transition:background .12s,color .12s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+.nav-item.active{background:rgba(255,255,255,.10);color:#fff}
+.nav-item.active .num{background:var(--amber);color:var(--ink)}
+.nav-item .ic{font-size:16px;width:20px;text-align:center;flex:0 0 20px}
+.nav-item .num{font-size:11px;font-weight:700;background:rgba(255,255,255,.10);color:#aeb9d6;
+  border-radius:5px;padding:1px 6px;min-width:24px;text-align:center}
+.nav-foot{padding:16px 22px 0;font-size:12px;color:#7585a8;line-height:1.5;border-top:1px solid rgba(255,255,255,.08);margin-top:14px;padding-top:16px}
+.nav-foot a{color:#9fb0d6}
+
+.main{flex:1;min-width:0;padding:0}
+.topbar{background:rgba(238,241,248,.86);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20;
+  padding:14px 40px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.crumb{font-size:13px;color:var(--muted)}
+.crumb b{color:var(--ink)}
+.topbar .links{font-size:12.5px;display:flex;gap:16px;flex-wrap:wrap}
+.wrap{max-width:1020px;margin:0 auto;padding:34px 40px 90px}
+
+/* ---------- Panels ---------- */
+.panel{display:none;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.phead{margin-bottom:6px}
+.phead .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:700}
+.phead h2{font-family:'Fraunces',serif;font-weight:600;font-size:33px;line-height:1.1;margin:6px 0 6px}
+.phead .lede{color:var(--muted);font-size:16px;max-width:70ch;margin:0}
+.statusline{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 26px}
+.pill{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:30px;background:var(--line-2);color:var(--ink-soft);border:1px solid var(--line)}
+.pill.green{background:var(--green-bg);color:#13724f;border-color:#bfe9d6}
+.pill.amber{background:var(--amber-bg);color:#9a6a09;border-color:#f3dca5}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 24px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:2px 0 12px;display:flex;align-items:center;gap:9px}
+.card h4{font-size:14.5px;font-weight:700;margin:18px 0 8px;color:var(--ink-soft)}
+.card p{margin:9px 0}
+.card ul{margin:9px 0;padding-left:20px}
+.card li{margin:5px 0}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:6px}
+.tag.green{background:var(--green-bg);color:#13724f}
+.tag.amber{background:var(--amber-bg);color:#9a6a09}
+
+.grid{display:grid;gap:16px}
+.grid.two{grid-template-columns:1fr 1fr}
+.grid.three{grid-template-columns:repeat(3,1fr)}
+.grid.four{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.grid.two,.grid.three,.grid.four{grid-template-columns:1fr}}
+
+/* stat tiles */
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.stat .n{font-family:'Fraunces',serif;font-size:27px;font-weight:600;line-height:1;color:var(--ink)}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+.stat.accent-amber{border-top:3px solid var(--amber)}
+.stat.accent-blue{border-top:3px solid var(--blue)}
+.stat.accent-green{border-top:3px solid var(--green)}
+.stat.accent-purple{border-top:3px solid var(--purple)}
+.stat.accent-coral{border-top:3px solid var(--coral)}
+
+/* category cards on overview */
+.catcard{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 16px 15px;
+  cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;text-align:left;width:100%;font-family:inherit}
+.catcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,33,61,.12);text-decoration:none;border-color:#cdd7ea}
+.catcard .ic{font-size:21px}
+.catcard .nm{font-weight:700;font-size:15px;margin:8px 0 3px;color:var(--ink)}
+.catcard .ds{font-size:12.5px;color:var(--muted);line-height:1.45}
+.catcard .cn{font-size:11px;font-weight:700;color:var(--muted-2)}
+
+/* tables */
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.7px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--ink);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:.02em}
+th:first-child{border-top-left-radius:9px}
+th:last-child{border-top-right-radius:9px}
+tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:#f7f9fd}
+.tablecard{overflow:hidden;border:1px solid var(--line);border-radius:12px;margin:14px 0;box-shadow:var(--shadow)}
+.tablecard table{margin:0}
+.scroll{overflow-x:auto}
+
+/* callouts */
+.callout{border-left:4px solid var(--blue);background:var(--blue-bg);padding:13px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}
+.callout.warn{border-color:var(--coral);background:var(--coral-bg)}
+.callout.quote{border-color:var(--purple);background:#f3eefb;font-family:'Fraunces',serif;font-size:16px;font-style:italic;color:var(--ink-soft)}
+.callout .lbl{display:block;font-family:'Inter',sans-serif;font-style:normal;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+/* open items / verify */
+.verify{background:#fffaf0;border:1px solid #f3dca5;border-radius:12px;padding:16px 20px;margin:18px 0}
+.verify h4{margin:0 0 8px;color:#9a6a09;display:flex;align-items:center;gap:8px;font-size:14px}
+.verify ol{margin:6px 0;padding-left:22px}
+.verify li{margin:5px 0;font-size:13.7px}
+
+/* cross refs */
+.xrefs{margin:20px 0 4px}
+.xrefs .lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;background:var(--paper);
+  border:1px solid var(--line);color:var(--ink-soft);border-radius:30px;padding:5px 13px;margin:0 7px 8px 0;cursor:pointer}
+.chip:hover{border-color:var(--amber);background:#fff;text-decoration:none}
+.chip .ic{font-size:14px}
+
+details{border:1px solid var(--line);border-radius:11px;margin:12px 0;background:var(--panel);overflow:hidden}
+details summary{cursor:pointer;padding:13px 18px;font-weight:600;font-size:14px;list-style:none;display:flex;align-items:center;gap:9px;color:var(--ink-soft)}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸";color:var(--amber);font-size:14px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+details summary:hover{background:#f7f9fd}
+details .dbody{padding:4px 20px 18px;border-top:1px solid var(--line-2)}
+
+/* resources */
+.reslist{display:grid;gap:0}
+.resrow{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--line)}
+.resrow:last-child{border-bottom:none}
+.resrow .ic{font-size:18px;width:30px;text-align:center;flex:0 0 30px}
+.resrow .meta{flex:1;min-width:0}
+.resrow .meta .t{font-weight:600;font-size:14.5px}
+.resrow .meta .d{font-size:12.5px;color:var(--muted)}
+.resrow .go{font-size:12.5px;font-weight:600;white-space:nowrap}
+.kbd{font-size:12px;background:#f0f3f9;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:ui-monospace,monospace}
+
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#0d1730;color:#d6e0f5;
+  padding:14px 16px;border-radius:10px;overflow-x:auto;white-space:pre;line-height:1.5;margin:12px 0}
+
+.notebar{font-size:12.5px;color:var(--muted);margin-top:8px}
+hr.soft{border:none;border-top:1px solid var(--line);margin:24px 0}
+
+@media(max-width:860px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;flex:none}
+  .sidebar{display:flex;flex-direction:column}
+  .nav-scroll{display:flex;flex-wrap:wrap;gap:4px;padding:8px}
+  .nav-group{padding:4px}
+  .nav-label{display:none}
+  .topbar{padding:12px 18px}
+  .wrap{padding:22px 18px 70px}
+  .nav-foot{display:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="gear" width="74" height="74" viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13c.04-.33.06-.66.06-1s-.02-.67-.06-1l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.73-1l-.38-2.65A.49.49 0 0 0 14 1h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.3 7.3 0 0 0-1.73 1l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.5.5 0 0 0 .12.64L4.6 11c-.04.33-.06.66-.06 1s.02.67.06 1l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.1.74 1.73 1l.38 2.65c.04.24.25.42.49.42h4c.24 0 .45-.18.49-.42l.38-2.65c.63-.26 1.21-.6 1.73-1l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.5.5 0 0 0-.12-.64L19.4 13zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg>
+      <svg class="gear two" width="46" height="46" viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13c.04-.33.06-.66.06-1s-.02-.67-.06-1l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.73-1l-.38-2.65A.49.49 0 0 0 14 1h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.3 7.3 0 0 0-1.73 1l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.5.5 0 0 0 .12.64L4.6 11c-.04.33-.06.66-.06 1s.02.67.06 1l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.1.74 1.73 1l.38 2.65c.04.24.25.42.49.42h4c.24 0 .45-.18.49-.42l.38-2.65c.63-.26 1.21-.6 1.73-1l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.5.5 0 0 0-.12-.64L19.4 13zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg>
+      <h1>Buckeye Imagination Museum</h1>
+      <div class="sub">Mission Brain</div>
+    </div>
+    <div class="searchwrap">
+      <input id="nav-search" type="text" placeholder="Filter sections…" autocomplete="off">
+    </div>
+    <div class="nav-scroll">
+      <div class="nav-group">
+        <div class="nav-label">Start here</div>
+        <button class="nav-item" data-tab="overview"><span class="ic">🧠</span> Overview</button>
+        <button class="nav-item" data-tab="resources"><span class="ic">📂</span> Source Library</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">The 12 Categories</div>
+        <button class="nav-item" data-tab="identity"><span class="num">01</span> Identity</button>
+        <button class="nav-item" data-tab="programs"><span class="num">02</span> Programs</button>
+        <button class="nav-item" data-tab="impact"><span class="num">03</span> Impact</button>
+        <button class="nav-item" data-tab="revenue"><span class="num">04</span> Revenue</button>
+        <button class="nav-item" data-tab="audiences"><span class="num">05</span> Audiences</button>
+        <button class="nav-item" data-tab="people"><span class="num">06</span> People</button>
+        <button class="nav-item" data-tab="voice"><span class="num">07</span> Voice</button>
+        <button class="nav-item" data-tab="brand"><span class="num">08</span> Brand</button>
+        <button class="nav-item" data-tab="strategy"><span class="num">09</span> Strategy</button>
+        <button class="nav-item" data-tab="stack"><span class="num">10</span> Stack</button>
+        <button class="nav-item" data-tab="guardrails"><span class="num">11</span> Guardrails</button>
+        <button class="nav-item" data-tab="rhythms"><span class="num">12</span> Rhythms</button>
+      </div>
+    </div>
+    <div class="nav-foot">
+      Phase 1 complete · June 18, 2026<br>
+      <a href="https://www.notion.so/Buckeye-Imagination-Museum-Mission-Brain-36e3b04a809a818abffad256bf9c0c72" target="_blank" rel="noopener">Open in Notion ↗</a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb">Mission Brain &nbsp;›&nbsp; <b id="crumb-now">Overview</b></div>
+      <div class="links">
+        <a href="https://www.notion.so/Buckeye-Imagination-Museum-Mission-Brain-36e3b04a809a818abffad256bf9c0c72" target="_blank" rel="noopener">Notion hub ↗</a>
+        <a href="https://app.notion.com/p/36e3b04a809a81879c51e474ec179dfb" target="_blank" rel="noopener">Build Reference ↗</a>
+      </div>
+    </div>
+    <div class="wrap">
+
+<!-- ===================== OVERVIEW ===================== -->
+<section class="panel active" id="overview">
+  <div class="phead">
+    <div class="eyebrow">The structured knowledge layer</div>
+    <h2>Buckeye Imagination Museum — Mission Brain</h2>
+    <p class="lede">The canonical content every AI Teammate reads before producing work. Twelve categories, synthesized from BIM's website, the Wellspring hub, Google Drive, Grok conversations, and the FY24–25 Form 990.</p>
+  </div>
+  <div class="statusline">
+    <span class="pill green">🟢 Phase 1 complete — June 18, 2026</span>
+    <span class="pill">12 / 12 categories drafted</span>
+    <span class="pill amber">🟡 Pending Justin's verification</span>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Quick context</h3>
+    <div class="grid two">
+      <div>
+        <p><b>Org:</b> Buckeye Imagination Museum (BIM)</p>
+        <p><b>AI Champion:</b> Justin Ross, Executive Director</p>
+        <p><b>Fiscal year:</b> Starts July 1</p>
+      </div>
+      <div>
+        <p><b>Mission (unified 6/18/2026):</b></p>
+        <div class="callout quote" style="margin-top:4px">"To spark imagination, discovery, and connections, at every age, through the power of play."</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:26px 0 4px">BIM at a glance</h4>
+  <div class="grid four">
+    <div class="stat accent-amber"><div class="n">70,000+</div><div class="l">visitors &amp; learners served a year (marketing number)</div></div>
+    <div class="stat accent-blue"><div class="n">30+</div><div class="l">hands-on exhibits across 5 themed rooms</div></div>
+    <div class="stat accent-green"><div class="n">22+</div><div class="l">active sponsors &amp; supporters</div></div>
+    <div class="stat accent-purple"><div class="n">501(c)(3)</div><div class="l">since 2010 · EIN 27-3014824</div></div>
+  </div>
+  <div class="grid four" style="margin-top:16px">
+    <div class="stat accent-coral"><div class="n">$729K</div><div class="l">FY24–25 total revenue (≈50/50 earned/contributed)</div></div>
+    <div class="stat accent-coral"><div class="n">−$448K</div><div class="l">FY24–25 operating deficit · ~$777K cash burn</div></div>
+    <div class="stat accent-blue"><div class="n">14 / 9</div><div class="l">staff members / board members</div></div>
+    <div class="stat accent-amber"><div class="n">Nov 15</div><div class="l">2026 — next Form 990 due (closest hard deadline)</div></div>
+  </div>
+
+  <h4 style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:30px 0 8px">Explore the 12 categories</h4>
+  <div class="grid three">
+    <button class="catcard" data-tab="identity"><div class="ic">🪪</div><div class="cn">01</div><div class="nm">Identity</div><div class="ds">Mission, legal standing, founding story, leadership, DEI.</div></button>
+    <button class="catcard" data-tab="programs"><div class="ic">🎯</div><div class="cn">02</div><div class="nm">Programs</div><div class="ds">What BIM does — 9 programs, admission, outcome framework.</div></button>
+    <button class="catcard" data-tab="impact"><div class="ic">📈</div><div class="cn">03</div><div class="nm">Impact</div><div class="ds">Case for support, the visitor-count framework, 990 numbers.</div></button>
+    <button class="catcard" data-tab="revenue"><div class="ic">💰</div><div class="cn">04</div><div class="nm">Revenue</div><div class="ds">5-tier sponsorships, sponsor footprint, funding mix, donors.</div></button>
+    <button class="catcard" data-tab="audiences"><div class="ic">👥</div><div class="cn">05</div><div class="nm">Audiences</div><div class="ds">Who BIM talks to — personas, channels, membership tiers.</div></button>
+    <button class="catcard" data-tab="people"><div class="ic">🧑‍🤝‍🧑</div><div class="cn">06</div><div class="nm">People</div><div class="ds">Staff, board, reviewer matrix, donor liaisons, vendors.</div></button>
+    <button class="catcard" data-tab="voice"><div class="ic">🗣️</div><div class="cn">07</div><div class="nm">Voice</div><div class="ds">5 voice pillars, tone by audience, 501(c)(3) safe phrases.</div></button>
+    <button class="catcard" data-tab="brand"><div class="ic">🎨</div><div class="cn">08</div><div class="nm">Brand</div><div class="ds">Visual direction, The Zone sub-brand, WCAG, AI imagery.</div></button>
+    <button class="catcard" data-tab="strategy"><div class="ic">🧭</div><div class="cn">09</div><div class="nm">Strategy</div><div class="ds">Sustainability frame, 12 initiatives, risks, 990 truth.</div></button>
+    <button class="catcard" data-tab="stack"><div class="ic">🛠️</div><div class="cn">10</div><div class="nm">Stack</div><div class="ds">Current &amp; future tools, CRM decision, 9 owned domains.</div></button>
+    <button class="catcard" data-tab="guardrails"><div class="ic">🛡️</div><div class="cn">11</div><div class="nm">Guardrails</div><div class="ds">AI usage/disclosure, consent, COI, crisis comms, approvals.</div></button>
+    <button class="catcard" data-tab="rhythms"><div class="ic">🗓️</div><div class="cn">12</div><div class="nm">Rhythms</div><div class="ds">Fiscal calendar, meeting cadences, deadlines, health checks.</div></button>
+  </div>
+
+  <div class="callout" style="margin-top:26px">
+    <span class="lbl">How this works</span>
+    The Mission Brain holds canonical content across the 12 categories below. The <b>Build Reference Page</b> (in Notion) holds the working scaffold — Verification Queue, Session Log, Decision Log. Build sequence: Identity → Programs → Impact → Revenue → Audiences → People → Voice → Brand → Strategy → Stack → Guardrails → Rhythms. <b>Phase 2</b> (verification + AI Teammate install) is what comes next.
+  </div>
+</section>
+
+<!-- ===================== 01 IDENTITY ===================== -->
+<section class="panel" id="identity">
+  <div class="phead"><div class="eyebrow">🪪 Category 01</div><h2>Identity</h2>
+    <p class="lede">The foundation every AI Teammate reads first — mission, vision, values, legal standing, founding story, leadership, DEI commitments.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span><span class="pill">Drafted by Vinyl · 2026-06-18</span></div>
+
+  <div class="card">
+    <h3>🎯 Canonical mission <span class="tag green">unified 6/18/2026</span></h3>
+    <div class="callout quote">"To spark imagination, discovery, and connections, at every age, through the power of play."</div>
+    <p class="notebar">Unified by Justin (via Amy). Replaces prior separate mission/vision statements. Justin's Wellspring and the 990 Part III still carry older mission language — pending edit.</p>
+    <div class="callout warn"><span class="lbl">🚨 Four mission variants in circulation</span>
+      <b>1. 990 Part III (IRS legal):</b> "To create extraordinary learning experiences across the arts, sciences and humanities…"<br>
+      <b>2. 990 Part I (activity):</b> "…a unique, safe, and welcoming environment where children and families can strengthen relationships…"<br>
+      <b>3. Sponsorship PDF:</b> "Provide Children and Families Opportunities to Learn and Discover Through the Power of Play"<br>
+      <b>4. Unified 6/18/2026 (current):</b> the statement above. Part III to be updated at the FY25–26 filing once the COSI lockdown completes.</div>
+  </div>
+
+  <div class="card">
+    <h3>⚖️ Legal standing reference <span class="tag green">verified</span></h3>
+    <div class="scroll"><table>
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Legal name</td><td>Buckeye Imagination Museum</td></tr>
+      <tr><td>Former name</td><td>Little Buckeye Children's Museum (Apr 2011 → May 23, 2022)</td></tr>
+      <tr><td>EIN</td><td><b>27-3014824</b></td></tr>
+      <tr><td>State of domicile</td><td>Ohio</td></tr>
+      <tr><td>Founded</td><td>2010 (incorporated) · April 2011 (opened to public)</td></tr>
+      <tr><td>Tax status</td><td>501(c)(3) public charity · §509(a)(2) · 65.84% public support</td></tr>
+      <tr><td>NTEE code</td><td>A50 — Museum &amp; Museum Activities</td></tr>
+      <tr><td>Fiscal year</td><td>July 1 – June 30</td></tr>
+      <tr><td>Address</td><td>175 West Third Street, Mansfield, OH 44902</td></tr>
+      <tr><td>Phone</td><td>(419) 522-2332</td></tr>
+      <tr><td>Transparency</td><td>Guidestar Exchange Partners in Trust</td></tr>
+      <tr><td>Audit</td><td>None — CPA-compiled (Banks &amp; Associates), not audited</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>📖 Founding story &amp; leadership</h3>
+    <p>Opened as <b>Little Buckeye Children's Museum</b> in April 2011 on West Fourth Street; incorporated as an Ohio 501(c)(3) in 2010. Purchased a 30,000 sq ft building at 175 West Third Street in late 2018 (joint capital campaign with the Renaissance Performing Arts Association — the <b>Imagination District</b>), renovated through COVID, rebranded to <b>Buckeye Imagination Museum</b> on May 23, 2022, and opened the new home August 10, 2022. Phase 3 built out the second-floor gallery (now <b>The Zone</b>).</p>
+    <h4>Leadership transition</h4>
+    <ul>
+      <li><b>Previous ED:</b> Fred Boll → <b>Current ED:</b> Justin Ross (announced Nov 24, 2025)</li>
+      <li><b>Board chair:</b> Barrett Thomas (outgoing) → <b>Ann Downs</b> (incoming July 2026 — presumed Richland County Athena Award recipient)</li>
+    </ul>
+    <details><summary>Org boilerplate library (short / medium / long)</summary><div class="dbody">
+      <p><b>Short (≤30 words):</b> Buckeye Imagination Museum is a hands-on children's museum in Mansfield, Ohio, where 70,000+ visitors a year discover play, creativity, and connection.</p>
+      <p><b>Medium (~60 words):</b> A nonprofit children's museum in downtown Mansfield. Through 30+ interactive exhibits, a dedicated teen + preteen floor called The Zone, and year-round programming including Museum Mornings, Summer Camp, and Project Passport kindergarten outreach, BIM sparks imagination, discovery, and connection for 70,000+ visitors and learners each year — at every age, through the power of play.</p>
+      <p><b>Long (~150 words):</b> available in the Identity page in Notion — opens April 2011 as Little Buckeye, 2022 move to 175 West Third Street and rebrand, 501(c)(3) (EIN 27-3014824), 70,000+ visitors a year, The Zone, weekly classes, Summer Camp, Project Passport, community programs.</p>
+    </div></details>
+  </div>
+
+  <div class="card">
+    <h3>🤝 DEI commitments</h3>
+    <p>"BIM believes in the power of play to inspire, educate, and connect — for every child, every family, every age." Specific commitments span <b>physical accessibility</b> (zero-level entrance, elevator, ADA design), <b>sensory accommodations</b> (headphones, comfort/quiet rooms), <b>economic accessibility</b> (free under 2 &amp; members, EBT $5, veteran/Buck ID/NCSC/ACM discounts), <b>programmatic inclusion</b> (bilingual where possible, sensory-friendly hours, camp scholarships), and active <b>community partnerships</b>.</p>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Founders' names + the 2010 motivating story</li>
+    <li>Capital campaign dollar total + lead donors (joint with Renaissance Theatre)</li>
+    <li>Phase 3 status — projected to wrap early 2024</li>
+    <li>Confirm Ann Downs = the Athena Award recipient</li>
+    <li>Exact month of the Fred Boll → Justin Ross transition</li>
+    <li>Update Wellspring mission once COSI lockdown completes</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="people"><span class="ic">🧑‍🤝‍🧑</span>People — bios &amp; board</span>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — boilerplate &amp; tagline</span>
+    <span class="chip" data-tab="strategy"><span class="ic">🧭</span>Strategy — financial inheritance</span>
+  </div>
+</section>
+
+<!-- ===================== 02 PROGRAMS ===================== -->
+<section class="panel" id="programs">
+  <div class="phead"><div class="eyebrow">🎯 Category 02</div><h2>Programs</h2>
+    <p class="lede">What BIM actually does. Nine active programs, admission &amp; hours, and a three-tier outcome-measurement framework.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🧩 BIM's 9 active programs</h3>
+    <div class="scroll"><table>
+      <tr><th>#</th><th>Program</th><th>Detail</th></tr>
+      <tr><td>1</td><td>Museum Exhibits / Drop-in</td><td>Daily; 4 themed rooms (Yellow/Blue/Purple/Lower Level) + Green Room in dev; 30+ exhibits.</td></tr>
+      <tr><td>2</td><td>Programs &amp; Classes</td><td>Pioneer Performing Arts (Thu), Arts &amp; Crafts (Thu/Fri, Beth Hostettler), Music &amp; Movement (Fri, Mark Koehler).</td></tr>
+      <tr><td>3 ⭐</td><td>Museum Mornings</td><td>Tue–Fri, 3-hr drop-off, ages 5–12, 15-kid cap, $15 member / $20 non-member.</td></tr>
+      <tr><td>4 ⭐</td><td>Summer Camp</td><td>2 one-week July sessions. 2026 theme: Disney Pixar "Inside Out" — Jul 13–17 + Jul 20–24. Partners: Richland Public Health + mind body align.</td></tr>
+      <tr><td>5</td><td>Nights at the Museum</td><td>Family Glow Night (Brightspeed), PJ Party, 80's Adult Night, Country Throwdown, Holiday Kick-Off, Black Friday.</td></tr>
+      <tr><td>6</td><td>Field Trips &amp; Groups</td><td>~80 field trips/yr; spring peak (~10 in 3 weeks early May). Emerson STEM Lab anchors future STEM trips.</td></tr>
+      <tr><td>7 ⭐</td><td>Project Passport</td><td>Kindergarten classroom outreach. Highest-leverage grant narrative. Funder TBD (Park National assumption retracted).</td></tr>
+      <tr><td>8</td><td>Birthday Parties &amp; Rentals</td><td>Members $225 / Non-members $299 (up to 30, 2 hrs). ~150 parties/yr.</td></tr>
+      <tr><td>9</td><td>Imagination Stations (outreach)</td><td>Off-site community deployments funded by Richland County Foundation Summertime Kids Grant.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>🎟️ Admission &amp; hours <span class="tag green">verified</span></h3>
+    <div class="grid two">
+      <div><h4>Admission</h4><ul>
+        <li>General <b>$16</b> (2+) · Senior $12 · Under 2 <b>FREE</b> · Members <b>FREE</b></li>
+        <li>EBT $5 (up to 4) · Veterans, Buck ID, NCSC, ACM all half price</li>
+      </ul></div>
+      <div><h4>Hours (seasonal)</h4><ul>
+        <li><b>Apr 1–Nov 30:</b> Tue–Sat 10–4 (Mon closed)</li>
+        <li><b>Dec 1–Mar 31:</b> Tue–Wed 10–4 · <b>Thu 10–7</b> · Fri–Sun 10–4</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Outcome-measurement framework</h3>
+    <p>A phased rollout: <b>Tier 1</b> (already trackable, zero new cost — start here) → <b>Tier 2</b> (light-touch instrumentation) → <b>Tier 3</b> (grant-grade, partner-leveraged). Six board-level KPIs anchor annual reporting: admissions, members, Project Passport students, Imagination Stations events, group bookings, and NPS/visitor satisfaction.</p>
+    <div class="callout"><span class="lbl">Key target proposal</span>"Universal coverage" — serve 100% of Richland County kindergarten classrooms each school year. Specific, measurable, county-wide — the kind of statement that wins grants.</div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li><b>Project Passport funder</b> — confirm actual funder (Park National assumption retracted)</li>
+    <li>Phase 3 second-floor gallery — current status</li>
+    <li>mind body align SEL assessment — does BIM get outcome data back?</li>
+    <li>Birthday Party Room — Hamilton sponsoring + Emerson STEM Lab: coexisting or replacing?</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — sponsor footprint</span>
+    <span class="chip" data-tab="impact"><span class="ic">📈</span>Impact — program output numbers</span>
+    <span class="chip" data-tab="rhythms"><span class="ic">🗓️</span>Rhythms — operating calendar</span>
+  </div>
+</section>
+
+<!-- ===================== 03 IMPACT ===================== -->
+<section class="panel" id="impact">
+  <div class="phead"><div class="eyebrow">📈 Category 03</div><h2>Impact</h2>
+    <p class="lede">Evidence of the change BIM makes — case for support, the resolved visitor-count framework, verified 990 numbers, and a consent-first story library.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🔢 The visitor-count framework <span class="tag green">resolved</span></h3>
+    <p>Three numbers, three uses — settled by Justin's Wellspring "Authoritative Quick Stats."</p>
+    <div class="scroll"><table>
+      <tr><th>Number</th><th>Context</th><th>When to use</th></tr>
+      <tr><td><b>~17,000</b></td><td>Paid admissions</td><td>Financial reporting, P&amp;L</td></tr>
+      <tr><td><b>~56,000</b></td><td>Discovery-era number</td><td>Internal context</td></tr>
+      <tr><td><b>70,000+</b></td><td>Sponsorship PDF — canonical marketing number</td><td><b>External, marketing, grants, donor pitches</b></td></tr>
+    </table></div>
+    <p class="notebar">Recommended public framing: <b>"70,000+ visitors and learners served annually."</b></p>
+  </div>
+
+  <div class="card">
+    <h3>💵 990 impact numbers <span class="tag green">FY24–25</span></h3>
+    <p>Funding mix is a rare ~50/50 split for a museum BIM's size — a strength, but contribution loss hits hard.</p>
+    <div class="grid four">
+      <div class="stat accent-green"><div class="n">$729K</div><div class="l">total revenue</div></div>
+      <div class="stat accent-blue"><div class="n">~50%</div><div class="l">earned (program service)</div></div>
+      <div class="stat accent-purple"><div class="n">$2.73M</div><div class="l">net assets</div></div>
+      <div class="stat accent-coral"><div class="n">$1.1M</div><div class="l">secured building debt</div></div>
+    </div>
+    <h4>5-year revenue trajectory</h4>
+    <div class="scroll"><table>
+      <tr><th>Year</th><th>Contributions + dues</th><th>Program revenue</th><th>Other</th><th>Total</th></tr>
+      <tr><td>2020 (COVID)</td><td>$168,190</td><td>$12,845</td><td>$1,216,100</td><td>$1,397,135</td></tr>
+      <tr><td>2021 (reopening)</td><td>$91,565</td><td>$178,878</td><td>$932,451</td><td>$1,202,894</td></tr>
+      <tr><td>2022 (move year)</td><td><b>$1,927,933</b></td><td>$311,434</td><td>$51,750</td><td>$2,298,767</td></tr>
+      <tr><td>2023</td><td>$545,580</td><td>$360,017</td><td>$25,509</td><td>$931,106</td></tr>
+      <tr><td>2024</td><td>$361,789</td><td>$357,693</td><td>$6,039</td><td>$725,521</td></tr>
+    </table></div>
+    <div class="callout warn"><span class="lbl">The trajectory story</span>Contributions have declined every year since the 2022 move ($1.93M → $545K → $362K) while program revenue holds steady ~$358K. FY24–25 ran a <b>$448K operating deficit</b> and a <b>~$777K liquid cash burn</b>. This is the sustainability fault line.</div>
+  </div>
+
+  <div class="card">
+    <h3>📣 Recent momentum &amp; hero quotes</h3>
+    <ul>
+      <li><b>AI face video</b> — 100,000+ views, shared by Destination Mansfield</li>
+      <li><b>TE Connectivity</b> $5,500 snack-bar grant · <b>COSI partnership</b> (Dr. Frederick Bertley coaching) · <b>Coca-Cola</b> in talks for The Zone presenting sponsorship</li>
+    </ul>
+    <details><summary>8 pull-ready hero quotes (Reviews Testimonials)</summary><div class="dbody"><ul>
+      <li>"One of the best kids museums in Ohio." — Aaron Nadolson</li>
+      <li>"Absolutely incredible place to take kids of any age." — Matt M</li>
+      <li>"Perfect blend of learning and play." — Nova Terra</li>
+      <li>"Worth every penny — we've been members ever since they relocated." — Christine MC</li>
+      <li>"Hours of fun — adults wore out before the kids." — Shorty's Noms</li>
+      <li>"It's nice the older kids have their own space upstairs." — Kathleen Beabout</li>
+      <li>"I have kids ages 4–13 and they all enjoy going." — Amber Harris</li>
+      <li>"There is literally hours of fun here!" — Shorty's Noms</li>
+    </ul></div></details>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Project Passport funder confirmation</li>
+    <li>Capital campaign dollar totals + lead donors</li>
+    <li>Outcome data BIM currently tracks beyond visitor counts</li>
+    <li>Annual impact letter — format/timing; does one go to donors today?</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="programs"><span class="ic">🎯</span>Programs — outcome measures</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — case for support</span>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — testimonial language</span>
+  </div>
+</section>
+
+<!-- ===================== 04 REVENUE ===================== -->
+<section class="panel" id="revenue">
+  <div class="phead"><div class="eyebrow">💰 Category 04</div><h2>Revenue</h2>
+    <p class="lede">How BIM is funded — the 5-tier sponsorship system, 22+ active sponsors mapped by room, corporate memberships, donor segmentation, and the verified 990 funding mix.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🏆 5-tier sponsorship system <span class="tag green">verified vs. signed contracts</span></h3>
+    <div class="scroll"><table>
+      <tr><th>Tier</th><th>Annual</th><th>Term</th><th>Key benefits</th></tr>
+      <tr><td><b>Play Maker</b></td><td>$2,000</td><td>3 yr</td><td>20 passes · 1 birthday party · 15% discount · plaque</td></tr>
+      <tr><td><b>Imagination Builder</b></td><td>$4,000</td><td>3 yr</td><td>30 passes · 1 private museum night ($675) · 15% discount</td></tr>
+      <tr><td><b>Discovery Leader</b></td><td>$8,000</td><td>3 yr</td><td>40 passes · private night · 20% discount · website feature</td></tr>
+      <tr><td><b>Premier Sponsor</b></td><td>$12,000</td><td>3 yr</td><td>50 passes · naming rights · 30% discount · museum-wide branding</td></tr>
+      <tr><td><b>Official Partner</b></td><td>$35K–50K</td><td><b>5 yr</b></td><td>Unlimited memberships · 2 private nights · 50% off parties · full exclusivity</td></tr>
+    </table></div>
+    <p class="notebar">Universal terms: 15% renewal discount on 5-yr first renewals · 50% early-termination penalty · <b>renewal cycle begins Q3 (January each year)</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Current sponsor footprint <span class="tag green">22+ active</span></h3>
+    <div class="scroll"><table>
+      <tr><th>Location</th><th>Sponsor(s)</th></tr>
+      <tr><td>Yellow Room — Lobby</td><td>Richland County Foundation</td></tr>
+      <tr><td>Indoor Playground</td><td>The Monica Family</td></tr>
+      <tr><td>Airport + Snack Bar</td><td>TE Connectivity ($5,500 snack-bar grant)</td></tr>
+      <tr><td>Blue Blocks</td><td>Mansfield Noon Optimist Club</td></tr>
+      <tr><td>Camping</td><td>Imagination Childcare + Step-by-Step Childcare</td></tr>
+      <tr><td>Vendor Marketplace</td><td>Alumni Roofing · Buckeye Bakery · Kimmy's Cucina · Tara's Floral · Doc's Deli · Gigi's Tacos (6)</td></tr>
+      <tr><td>Purple Room / The Zone</td><td><b>Coca-Cola</b> — presenting sponsor (in flight, 3–5 yr)</td></tr>
+      <tr><td>Green Room</td><td>Emerson Technologies (STEM Lab, AR sandbox, AI integration)</td></tr>
+      <tr><td>Lower Level — Room B / C</td><td>Hamilton Insurance + Grange (B) · Mansfield School Employees Assn (C) · Room A open</td></tr>
+      <tr><td>Train Tables</td><td>Mr. Bill's Wood Fired Pizza</td></tr>
+      <tr><td>Electrical Exhibit</td><td>FirstEnergy</td></tr>
+      <tr><td>Dino Dig</td><td>Studio 65 ($4,000)</td></tr>
+      <tr><td>Family Glow Night</td><td>Brightspeed Fiber Internet</td></tr>
+      <tr><td>General supporters</td><td>Mechanics Bank · COSI / Dr. Frederick Bertley · Destination Mansfield</td></tr>
+    </table></div>
+    <p class="notebar">2 in flight (Coca-Cola Zone; Climbing Wall) · 15+ open exhibit/room slots for pitch.</p>
+  </div>
+
+  <div class="card">
+    <h3>📉 990 funding mix <span class="tag green">FY24–25</span></h3>
+    <div class="scroll"><table>
+      <tr><th>Source</th><th>Amount</th><th>% of revenue</th></tr>
+      <tr><td>Membership dues</td><td>$157,269</td><td>22%</td></tr>
+      <tr><td>Other contributions, gifts, grants</td><td>$204,520</td><td>28%</td></tr>
+      <tr><td>Program service revenue</td><td>$357,693</td><td>49%</td></tr>
+      <tr><td>Investment income</td><td>$6,039</td><td>1%</td></tr>
+      <tr><td><b>Total</b></td><td><b>$729,404</b></td><td>100%</td></tr>
+    </table></div>
+    <p class="notebar">Contributed ≈ $361,789 (50%) · Earned ≈ $357,693 (49%). Membership dues are the single biggest line — the Cuseum migration matters a lot.</p>
+  </div>
+
+  <div class="card">
+    <h3>👤 Corporate memberships &amp; donor tiers</h3>
+    <div class="grid two">
+      <div><h4>Corporate membership (B2B)</h4><ul>
+        <li>0–75 guests $1,100 · 76–150 $1,500 · 151–200 $1,800 · 201–250 $2,000 · 251+ $2,100 (per year)</li>
+        <li>Each includes 1 free after-hours event ($975 value). Distinct from sponsorship — it's an employee perk, not philanthropy.</li>
+      </ul></div>
+      <div><h4>Individual donor tiers (proposed)</h4><ul>
+        <li><b>Principal</b> $10K+ · <b>Major</b> $1K–$9,999 · <b>Sustaining</b> $100–$999 · <b>Annual+member</b> $1–$99</li>
+        <li>Thresholds drive stewardship cadence, board co-liaisons, and gift-acceptance gates.</li>
+      </ul></div>
+    </div>
+    <details><summary>8 donor personas + Gift Acceptance Policy</summary><div class="dbody">
+      <p><b>Personas:</b> Local Family Champion · Hometown Returnee · Sponsor-Champion CEO · Big-Company Liaison · Foundation Officer · Grateful Alum · Board Member as Donor · In-Kind Giver (full detail in Notion).</p>
+      <p><b>Gift Acceptance Policy v1</b> (board-approval pending): defines accepted gifts, board-awareness gates ($10K+, naming rights, securities/property), declined gifts (mission/DEI conflicts, editorial-control conditions, partisan requirements), and the acceptance process.</p>
+    </div></details>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Park National Bank — any direct relationship? (affects Project Passport attribution)</li>
+    <li>Coca-Cola Zone "presented by" — where is the conversation now?</li>
+    <li>Blue Room exhibit sponsors — enumerate</li>
+    <li>Climbing Wall sponsor status · TE Connectivity total support figure</li>
+    <li>Board approval timeline on Gift Acceptance Policy</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="people"><span class="ic">🧑‍🤝‍🧑</span>People — donor liaisons</span>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — sponsor safe phrasing</span>
+    <span class="chip" data-tab="rhythms"><span class="ic">🗓️</span>Rhythms — Q3 renewal cycle</span>
+    <span class="chip" data-tab="strategy"><span class="ic">🧭</span>Strategy — Dev Director hire</span>
+  </div>
+</section>
+
+<!-- ===================== 05 AUDIENCES ===================== -->
+<section class="panel" id="audiences">
+  <div class="phead"><div class="eyebrow">👥 Category 05</div><h2>Audiences</h2>
+    <p class="lede">Who BIM talks to — primary audiences, the channel-and-cadence matrix, the membership program, and the all-important parents-not-kids direction.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🎯 The most important audience direction</h3>
+    <div class="callout quote">"Right now [the site is] geared just little kids… we're not trying to reach the kids through the website, because they're too young to even be accessing the website."</div>
+    <p><b>The website reaches PARENTS, not kids.</b> Kids experience BIM in person. — Justin, 5/8/2026 kickoff.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Primary audiences</h3>
+    <ul>
+      <li><b>Families with young children (0–12) — CORE.</b> Plan weekends online, share recommendations; members highly valued (moving to Cuseum digital cards).</li>
+      <li><b>Families with older kids &amp; teens — THE ZONE.</b> Strategically distinct; 13-year-olds won't bring friends to "Buckeye Imagination Museum" but will to "The Zone."</li>
+      <li><b>Corporate event guests &amp; sponsors.</b> Active conversations: Coca-Cola, Emerson, Mechanics Bank, TE Connectivity.</li>
+      <li><b>Secondary:</b> donors &amp; grantors (board-led), the 9-member board, community partners (COSI), press (Destination Mansfield), staff &amp; volunteers.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>📡 Channel &amp; cadence matrix</h3>
+    <div class="scroll"><table>
+      <tr><th>Audience</th><th>Primary channel</th><th>Cadence</th><th>Owner</th></tr>
+      <tr><td>Members</td><td>Cuseum app + e-newsletter</td><td>Monthly · event-driven</td><td>Marketing / Front desk</td></tr>
+      <tr><td>Non-member families</td><td>Email · Instagram · TikTok</td><td>Weekly social · monthly email</td><td>Marketing</td></tr>
+      <tr><td>Donors Tier 1 ($10K+)</td><td>1:1 in-person + letter</td><td>Quarterly + annual letter</td><td>Justin + board co-liaison</td></tr>
+      <tr><td>Donors Tier 2 ($1K–$10K)</td><td>Email + semi-annual 1:1</td><td>Semi-annual + annual</td><td>Justin</td></tr>
+      <tr><td>Sponsors (all tiers)</td><td>Q1 recognition → Q2 thank-you → Q3 renewal → Q4 private night</td><td>Quarterly per cycle</td><td>Justin + liaison</td></tr>
+      <tr><td>Foundation funders</td><td>Formal application + report</td><td>Per grant cycle</td><td>Justin → AI Grant Writer</td></tr>
+      <tr><td>Press</td><td>Press releases + media kit</td><td>Event-driven</td><td>Justin + Vinyl</td></tr>
+      <tr><td>Board</td><td>Board packet + ED report</td><td>Per board cadence</td><td>Justin + Treasurer</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>🎫 Membership program <span class="tag green">6 tiers · ACM reciprocal</span></h3>
+    <p>Family $169 · Family PLUS $219 · Family DELUXE $369 (party included) · Educator $159 · Single Parent $149 · Grandparent $149. All tiers include ACM reciprocal admission to 350+ children's museums nationwide (except Grandparent).</p>
+    <details><summary>Persona 9 — Corporate Membership Buyer (B2B)</summary><div class="dbody">
+      <p>HR Manager / COO / Employee Experience lead at a 50–500-employee Mansfield-area business. Motivated by <b>employee retention + client gifting — not philanthropy</b>. Buys a $1,100–$2,100/yr perk that punches above its weight. Distinct from the Sponsor-Champion CEO (Persona 3): no public recognition, annual renewal, treated as an ordinary business expense.</p>
+    </div></details>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Deeper donor + grantor persona development</li>
+    <li>Confirm board personality split + incoming-chair effect</li>
+    <li>Press/media list for Crawford County rollout</li>
+    <li>Staff bios + roles · volunteer program profile</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — tone by audience</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — donor personas</span>
+    <span class="chip" data-tab="programs"><span class="ic">🎯</span>Programs — audience cadence</span>
+  </div>
+</section>
+
+<!-- ===================== 06 PEOPLE ===================== -->
+<section class="panel" id="people">
+  <div class="phead"><div class="eyebrow">🧑‍🤝‍🧑 Category 06</div><h2>People</h2>
+    <p class="lede">Humans inside and adjacent to BIM — 14 staff, 9 board members, the AI reviewer matrix, major-donor liaisons, escalation chain, and vendors.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span><span class="pill">Confidential — internal</span></div>
+
+  <div class="card">
+    <h3>⚠️ Critical operating reality</h3>
+    <div class="callout warn"><span class="lbl">Justin's words</span>"Only 2 people in the office trying to run the place" — Justin + April Monroy. Succession plan, verbatim: <i>"If I had to leave today, I would put her name in the pot to take it over."</i></div>
+  </div>
+
+  <div class="card">
+    <h3>👥 Staff (14) &amp; board (9)</h3>
+    <div class="grid two">
+      <div><h4>Staff leadership</h4><ul>
+        <li><b>Justin Ross</b> — Executive Director</li>
+        <li><b>April Monroy</b> — Operations Manager · ~3 yrs · succession candidate</li>
+        <li><b>Amanda Skeen</b> — Front Desk Manager</li>
+        <li><b>Dave Horning</b> — Maintenance · <b>Lupe Monroy</b>, <b>Bill Zehner</b> — Janitorial</li>
+        <li>Programs/floor: Beth Hostettler, Mark Koehler, Celyse Hernandez, Riona Kochis, Vi-Anne Matthews, Andrea Skeen, Kimberlyn Skeen, Kezziah Smith</li>
+        <li>+ incoming summer marketing/social intern</li>
+      </ul></div>
+      <div><h4>Board of Directors</h4><ul>
+        <li><b>Ann Downs</b> — Chair (incoming July 2026)</li>
+        <li><b>Scott Heimann</b> — Treasurer · <b>Nyasha Oden</b> — Secretary</li>
+        <li><b>Margie Tasseff</b> — Vice Chair (per 990)</li>
+        <li>Zach Jones · Jodie Snavely · Teana Sykes · Jessica Hiser · Amy Goyal</li>
+        <li><b>Barrett Thomas</b> — outgoing chair</li>
+      </ul></div>
+    </div>
+    <p class="notebar">Compensation: $0 reportable across all officers/directors in FY24–25; none over $100K.</p>
+    <div class="callout"><span class="lbl">Family relations (sensitive — flagged for Guardrails)</span>Andrea, Amanda &amp; Kimberlyn Skeen appear related; Lupe &amp; April Monroy appear related. Recommend a board-approved Conflict of Interest disclosure standard.</div>
+  </div>
+
+  <div class="card">
+    <h3>🧠 Justin's operating profile (for AI Teammates)</h3>
+    <p>Came from the <b>Spartan Race ecosystem</b> — built a $30–40M merch line, co-built ticketing platforms scaled to $100M+. Self-describes as <b>"a shotgun"</b> — neurodivergent, high-output, wants direct/blunt feedback. Strong aesthetics opinions (clean, crisp, dark contrast, not babyish). A builder, not a passive operator. Currently also directing 5K wine runs in Napa.</p>
+    <ul>
+      <li>Wants AI to <b>push back</b> — constructive challenger, not deferential</li>
+      <li>Bad-looking drafts lose his trust before content lands</li>
+      <li>Trusts speed — first drafts fast, edit later</li>
+      <li>Anything that adds visible capacity for him or April gets accepted faster</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🔁 AI reviewer matrix &amp; escalation</h3>
+    <p>Each planned AI Teammate maps to a Primary Reviewer + Secondary + SME (Stage 6 Human Review). <b>Justin appears on all 12 Teammates</b>; <b>April</b> is Primary on 5 + Secondary on 7 — the single-point-of-failure pressure that Strategic Initiative 12 (Development Director hire) is designed to relieve.</p>
+    <details><summary>Reviewer assignments + escalation matrix</summary><div class="dbody">
+      <div class="scroll"><table>
+        <tr><th>AI Teammate</th><th>Primary</th><th>Secondary</th></tr>
+        <tr><td>Chief of Staff Associate</td><td>Justin</td><td>April</td></tr>
+        <tr><td>Donor Stewardship Coordinator</td><td>Justin</td><td>Scott Heimann</td></tr>
+        <tr><td>Grant Writer</td><td>Justin</td><td>Scott Heimann</td></tr>
+        <tr><td>Major Gift Navigator</td><td>Justin</td><td>Board co-liaison</td></tr>
+        <tr><td>Annual Giving Comms</td><td>April</td><td>Justin</td></tr>
+        <tr><td>Content Editor</td><td>April</td><td>Justin</td></tr>
+        <tr><td>Staff Copywriter</td><td>April</td><td>Justin</td></tr>
+        <tr><td>Impact Storytelling</td><td>Justin</td><td>April</td></tr>
+        <tr><td>Social Media Associate</td><td>Marketing intern</td><td>April</td></tr>
+        <tr><td>Executive Assistant</td><td>Justin</td><td>April</td></tr>
+        <tr><td>Program Coordinator</td><td>April</td><td>Mark / Beth</td></tr>
+        <tr><td>Project Coordinator</td><td>April</td><td>Justin</td></tr>
+      </table></div>
+      <p class="notebar">Escalation: factual errors → Reviewer corrects + logs; 501(c)(3) concern → Justin + Treasurer → counsel; sensitive minor content → Programs SME → Justin → board chair.</p>
+    </div></details>
+  </div>
+
+  <div class="card">
+    <h3>🧾 Vendor directory (key)</h3>
+    <div class="scroll"><table>
+      <tr><th>Vendor</th><th>Service</th><th>Cost / notes</th></tr>
+      <tr><td>Design by Cline</td><td>Current WordPress site</td><td>$60/hr, restricts backend access</td></tr>
+      <tr><td>Cuseum</td><td>Membership platform</td><td>~$200/mo · no native web integration</td></tr>
+      <tr><td>Square</td><td>Payments</td><td>Tickets, parties, gift shop, snack bar</td></tr>
+      <tr><td>Vinyl Marketing</td><td>Wellspring + Website + Brand + Ads</td><td>$28K · 8 mo · signed 4/27/2026 · ends ~Jan 2027</td></tr>
+      <tr><td>COSI / Dr. Frederick Bertley</td><td>Board + strategy coaching</td><td>Weekly · strategic partnership</td></tr>
+      <tr><td>Emerson Technologies</td><td>STEM Lab + AR sandbox</td><td>$40K remaining restricted</td></tr>
+    </table></div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Confirm Ann Downs = Athena Award incoming chair · Fred Boll → Justin transition date</li>
+    <li>Titles + bios for the 11 staff beyond Justin/April/Amanda</li>
+    <li>Conflict of Interest policy on family relations</li>
+    <li>Development Director hire timeline (Strategic Initiative 12)</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="stack"><span class="ic">🛠️</span>Stack — reviewer references</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — donor liaisons</span>
+    <span class="chip" data-tab="guardrails"><span class="ic">🛡️</span>Guardrails — COI + reviewer governance</span>
+  </div>
+</section>
+
+<!-- ===================== 07 VOICE ===================== -->
+<section class="panel" id="voice">
+  <div class="phead"><div class="eyebrow">🗣️ Category 07</div><h2>Voice</h2>
+    <p class="lede">How BIM sounds — five voice pillars, tone that flexes by audience, 501(c)(3)-compliant sponsor phrasing, and the banned-words list.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🎭 5 voice pillars <span class="tag green">official Brand Kit</span></h3>
+    <div class="grid two">
+      <div><ol>
+        <li><b>Playful &amp; Whimsical</b></li>
+        <li><b>Inclusive &amp; Welcoming</b></li>
+        <li><b>Curious &amp; Encouraging</b></li>
+        <li><b>Community-Minded &amp; Supportive</b></li>
+        <li><b>Empowering &amp; Optimistic</b></li>
+      </ol></div>
+      <div><div class="callout quote">"We believe in the power of play to inspire, educate, and connect."</div>
+      <p class="notebar">Justin's 5/8 reconciliation: stay playful for kid-facing content, but for parents on the web lean <b>warm-but-not-babyish</b>. The Zone gets bolder/cooler/darker treatment for teens.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎚️ Tone by audience</h3>
+    <div class="scroll"><table>
+      <tr><th>Audience</th><th>Voice register</th></tr>
+      <tr><td>Parents (web, email)</td><td>Warm, not babyish — Inclusive · Welcoming · Curious · Encouraging</td></tr>
+      <tr><td>Kids (in-museum signage)</td><td>Playful · Whimsical · Imaginative</td></tr>
+      <tr><td>Teens + preteens (The Zone)</td><td>Bolder · cooler · darker · contrasting</td></tr>
+      <tr><td>Sponsors + donors</td><td>Professional · grateful · 501(c)(3) compliant</td></tr>
+      <tr><td>Board + funders</td><td>Plain-spoken · honest · transparent — real numbers, real plan</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>✅ 501(c)(3)-compliant sponsor phrasing</h3>
+    <p><b>Approved verbs:</b> Sponsored by · Presented by · Proudly supported by · Made possible by · Generously supported by.</p>
+    <p><b>Example:</b> "Electrical Exhibit made possible by FirstEnergy." · "Train Tables proudly supported by Mr. Bill's Wood Fired Pizza."</p>
+    <div class="callout warn"><span class="lbl">Never use (triggers taxable advertising — IRC §513(i))</span>Prices, discounts, promo codes · comparative/superlative language ("best," "#1," "award-winning") · calls to action ("buy now," "switch and save") · endorsements · sponsor having final wording approval.</div>
+  </div>
+
+  <div class="card">
+    <h3>🚫 Banned &amp; deprecated language</h3>
+    <ul>
+      <li><b>Hard ban (501c3):</b> comparatives/CTAs/discounts in any sponsor recognition.</li>
+      <li><b>Brand anti-patterns:</b> "babyish" tone (Justin's hardest no), over-effusive language, corporate jargon to families, apologetic openings, "unlike other museums."</li>
+      <li><b>Retire:</b> "Mansfield/Richland Discovery School" (never was BIM's name) · pre-unification mission · "Class A–E" tier names · "children's museum" alone as primary descriptor.</li>
+    </ul>
+    <div class="callout"><span class="lbl">"Social suicide" insight — internal use only, NEVER external</span>Justin: a 13-year-old won't have a birthday party "at Buckeye Imagination Museum" but will "at The Zone." This is the strategic justification for The Zone endorsed brand — explain <i>why</i> The Zone exists, never say it externally.</div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Confirm 5 pillars hold post-COSI vision/mission refresh</li>
+    <li>FAQ content (membership, Zone, parties, accessibility)</li>
+    <li>Donor + sponsor pitch script templates · press boilerplate</li>
+    <li>Glossary of BIM-specific terms to use vs. retire</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="brand"><span class="ic">🎨</span>Brand — The Zone identity</span>
+    <span class="chip" data-tab="audiences"><span class="ic">👥</span>Audiences — voice flex</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — sponsor template</span>
+  </div>
+</section>
+
+<!-- ===================== 08 BRAND ===================== -->
+<section class="panel" id="brand">
+  <div class="phead"><div class="eyebrow">🎨 Category 08</div><h2>Brand</h2>
+    <p class="lede">How BIM looks — visual direction, the gears decision, The Zone sub-brand, WCAG standards, and the AI-imagery policy.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>👀 Justin's visual direction <span class="tag green">5/8/2026</span></h3>
+    <ul>
+      <li><b>Clean, crisp, dark color contrast with splash accents that pop.</b></li>
+      <li>Mix of dark and light backgrounds — dark grounds for impact sections.</li>
+      <li><b>Buttons must read</b> — don't blend into backgrounds.</li>
+      <li><b>Not babyish.</b> The site reaches parents, not kids.</li>
+      <li>Pop-ups must <b>not</b> take over the screen — prominent X, off to one side.</li>
+    </ul>
+    <div class="grid two">
+      <div><h4>Likes (reference)</h4><ul><li>Children's Museum of Indianapolis — storytelling, breadcrumb-per-exhibit, dark contrast</li><li>COSI Pixar exhibit page · Pittsburgh Children's Museum</li></ul></div>
+      <div><h4>Avoid</h4><ul><li>Cleveland Museum — "too much everything," bright-on-bright blocky, buttons blend in, no contrast</li></ul></div>
+    </div>
+    <div class="callout"><span class="lbl">The gears decision</span>Justin would start over without the gears, but the board keeps them. Decision: <b>keep the gears, but constrain them</b> — no mixed colors right behind them.</div>
+  </div>
+
+  <div class="card">
+    <h3>⚡ The Zone — endorsed brand architecture</h3>
+    <p><b>The Zone by Buckeye Imagination Museum.</b> Closely tied to the parent brand but distinct enough to own its teen/preteen audience — <b>bolder, contrasting, darker</b>, with the "by Buckeye Imagination Museum" wordmark kept subtle so parents see it. Designed with a "presented by" sponsorship structure built in (Coca-Cola in flight). Gets its own primary/secondary/submark logos + complementary color and type system.</p>
+  </div>
+
+  <div class="card">
+    <h3>♿ WCAG 2.1 AA + AI imagery</h3>
+    <div class="grid two">
+      <div><h4>WCAG 2.1 AA at launch</h4><ul>
+        <li>4.5:1 contrast · alt text · captions · 200% resize</li>
+        <li>Keyboard operable · visible focus · Esc-dismissable pop-ups · 44×44px touch targets</li>
+        <li>Pre-launch + 30-day + quarterly re-audits</li>
+      </ul></div>
+      <div><h4>AI-generated imagery policy</h4><ul>
+        <li><b>OK:</b> concept art, stylized promo graphics, internal materials, patterns.</li>
+        <li><b>Disclose:</b> any AI person not in BIM's library, future-state renderings.</li>
+        <li><b>Never:</b> impact/donor/grant/annual-report/press materials, or any specific child/family — those need real, consented photos.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Exact color hex + type specs (designer to extract from Brand Kit PDF)</li>
+    <li>Photography library audit · photo-shoot date · family photo-release process</li>
+    <li>The Zone final URL strategy + color/type/iconography direction</li>
+    <li>Photo gallery live-feed source (Google reviews API / manual)</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — reinforces pillars</span>
+    <span class="chip" data-tab="stack"><span class="ic">🛠️</span>Stack — Claude Design</span>
+    <span class="chip" data-tab="guardrails"><span class="ic">🛡️</span>Guardrails — AI imagery</span>
+  </div>
+</section>
+
+<!-- ===================== 09 STRATEGY ===================== -->
+<section class="panel" id="strategy">
+  <div class="phead"><div class="eyebrow">🧭 Category 09</div><h2>Strategy</h2>
+    <p class="lede">Where BIM is going — the sustainability frame, 12 active initiatives, the strategic risk register, and the verified 990 financial truth.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🎯 The strategic frame</h3>
+    <div class="callout quote">"I was told that the museum was in a positive financial situation… What I have found is the opposite, and there is no plan for sustainability." — Justin, Jan 2 2026</div>
+    <p>The single most important strategic statement in the brain. Justin inherited ~$1.1M building debt, ~17K paid visits, a "stale, out of touch" board, no succession, no outcome measurement, no CRM, and a 2021-era website with a $60/hr vendor lock.</p>
+  </div>
+
+  <div class="card">
+    <h3>📈 990 financial truth <span class="tag green">FY24–25</span></h3>
+    <div class="grid four">
+      <div class="stat accent-green"><div class="n">$729K</div><div class="l">total revenue</div></div>
+      <div class="stat accent-coral"><div class="n">$1.18M</div><div class="l">total expenses</div></div>
+      <div class="stat accent-coral"><div class="n">−$448K</div><div class="l">operating deficit</div></div>
+      <div class="stat accent-amber"><div class="n">$95K</div><div class="l">year-end liquid cash</div></div>
+    </div>
+    <div class="callout warn"><span class="lbl">The cash burn — the real frame</span>Cash dropped from <b>$872,743 → $45,896</b> during FY24–25 (~$777K liquid burn). The 5-year contribution decline ($1.93M → $545K → $362K) is the central strategic problem; growing earned revenue + a sustainer donor base is the answer. Public charity status is solid (§509(a)(2), 65.84% support).</div>
+  </div>
+
+  <div class="card">
+    <h3>🚀 12 active initiatives</h3>
+    <div class="scroll"><table>
+      <tr><th>#</th><th>Initiative</th><th>Status</th></tr>
+      <tr><td>1</td><td>Wellspring + Website + Brand + Digital Ad System (Vinyl)</td><td>Active · ~Jan 2027</td></tr>
+      <tr><td>2</td><td>The Zone endorsed brand identity launch</td><td>Active · ~Nov 2026</td></tr>
+      <tr><td>3</td><td>Coca-Cola "presented by" Zone sponsorship</td><td>In flight</td></tr>
+      <tr><td>4</td><td>Emerson STEM Lab + AR Sandbox + AI integration</td><td>Active build</td></tr>
+      <tr><td>5</td><td>COSI vision/mission/values lockdown</td><td>Active · imminent</td></tr>
+      <tr><td>6</td><td>Cuseum migration (from laminator-and-cards)</td><td>Active</td></tr>
+      <tr><td>7</td><td>Summer marketing/social intern hire</td><td>Active</td></tr>
+      <tr><td>8</td><td>Board chair transition (Thomas → Downs)</td><td>Active · July 2026</td></tr>
+      <tr><td>9</td><td>Board fundraising subcommittee</td><td>Active</td></tr>
+      <tr><td>10</td><td>CRM decision + implementation (Little Green Light)</td><td>Active · Q3–Q4</td></tr>
+      <tr><td>11</td><td>Project Passport scaling</td><td>Active</td></tr>
+      <tr><td>12 ⭐</td><td><b>Development Director hire</b> — structural fix for single-point-of-failure</td><td>Priority · target Q3 FY26–27</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>⚠️ Top strategic risks</h3>
+    <div class="scroll"><table>
+      <tr><th>Risk</th><th>Prob.</th><th>Impact</th><th>Mitigation</th></tr>
+      <tr><td>ED single-point-of-failure</td><td>HIGH</td><td>HIGH</td><td>Development Director hire</td></tr>
+      <tr><td>CRM gap (no system for 22+ sponsors, tiers, grants)</td><td>HIGH</td><td>HIGH</td><td>Little Green Light</td></tr>
+      <tr><td>April Monroy overload</td><td>MED</td><td>HIGH</td><td>Reviewer matrix shifts load post-Dev Director</td></tr>
+      <tr><td>AI System drift if Health Checks skip</td><td>MED</td><td>MED</td><td>Calendar-locked cadence</td></tr>
+      <tr><td>Website vendor lock</td><td>HIGH</td><td>MED</td><td>Vinyl transition to Astro/Sanity/Cloudflare</td></tr>
+      <tr><td>501(c)(3) compliance breach in sponsor recognition</td><td>LOW</td><td>HIGH</td><td>Sponsor template + banned words + reviewer matrix</td></tr>
+    </table></div>
+    <details><summary>The 3-year horizon (proposed for board)</summary><div class="dbody">
+      <p><b>Year 1 (FY26–27):</b> Stabilize. Lock outcome measurement, hire Dev Director, implement CRM, launch new website + The Zone, convert Coca-Cola, reach 80K visitors.</p>
+      <p><b>Year 2 (FY27–28):</b> Scale. Annual fund + major gifts at $400K+, Emerson STEM Lab generating field-trip revenue, push toward 100K, begin debt-retirement plan.</p>
+      <p><b>Year 3 (FY28–29):</b> Multi-year sponsor cadence normalized, public annual report, full governance/policy set, Justin + April at sustainable capacity, plan next capital project.</p>
+    </div></details>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Annual fundraising goal for FY26–27 (board subcommittee)</li>
+    <li>Development Director hire timeline + funding source</li>
+    <li>Post-Vinyl strategy roadmap (engagement ends ~Jan 2027)</li>
+    <li>Capital priorities — Green Room timeline, next phase</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="people"><span class="ic">🧑‍🤝‍🧑</span>People — Dev Director</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — sustainability</span>
+    <span class="chip" data-tab="stack"><span class="ic">🛠️</span>Stack — CRM blocker</span>
+    <span class="chip" data-tab="rhythms"><span class="ic">🗓️</span>Rhythms — Q3 window</span>
+  </div>
+</section>
+
+<!-- ===================== 10 STACK ===================== -->
+<section class="panel" id="stack">
+  <div class="phead"><div class="eyebrow">🛠️ Category 10</div><h2>Stack</h2>
+    <p class="lede">Tech &amp; AI infrastructure — the current stack, the future-state build, the CRM decision, and the 9 owned domains.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🧰 Current stack <span class="tag green">verified</span></h3>
+    <div class="scroll"><table>
+      <tr><th>Layer</th><th>Tool</th><th>Cost / notes</th></tr>
+      <tr><td>Membership</td><td>Cuseum (transitioning to)</td><td>~$200/mo · Apple/Google Wallet cards · no native web integration</td></tr>
+      <tr><td>Website</td><td>Custom WordPress (Design by Cline)</td><td>$60/hr · backend access restricted · 2021-era</td></tr>
+      <tr><td>Payments</td><td>Square</td><td>Tickets, gift shop, snack bar, parties</td></tr>
+      <tr><td>Forms / booking</td><td>Gravity Forms Pro · Bookly Cloud</td><td>WordPress licenses · Square integration</td></tr>
+      <tr><td>Email</td><td>Constant Contact</td><td>Cuseum email add-on under consideration</td></tr>
+      <tr><td><b>CRM</b></td><td><b>NONE — critical gap</b></td><td>Recommendation: Little Green Light</td></tr>
+      <tr><td>Analytics</td><td>Google Analytics 4</td><td>To configure during build</td></tr>
+      <tr><td>Knowledge layer</td><td>Notion (this hub)</td><td>TechSoup ~$5/user/mo</td></tr>
+      <tr><td>AI (current)</td><td>Grok + ChatGPT</td><td>Not yet on Claude — transitioning per Vinyl</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>🔮 Future-state stack <span class="tag green">Vinyl engagement</span></h3>
+    <p>Notion (continues) · <b>Sanity</b> content warehouse · <b>Astro</b> front-end (AI-native) · <b>Cloudflare</b> hosting/edge · <b>Claude</b> (Teams, nonprofit pricing) · form/email TBD (ActiveCampaign / Resend). All platforms billed direct to BIM.</p>
+    <p class="notebar">Tech budget tiers: Lean ~$1,800–2,200/yr · Moderate ~$2,500–3,500/yr · Scaled ~$4,000–6,000/yr.</p>
+  </div>
+
+  <div class="card">
+    <h3>📇 CRM decision <span class="tag green">recommended: Little Green Light</span></h3>
+    <p>BIM tracks 22+ sponsors, 6 membership tiers, 4 donor tiers, and ~5+ grant funders — today living in Justin's head + April's spreadsheets + Cuseum + Square + Drive. Little Green Light is nonprofit-purpose-built (~$50–80/mo), with donor tracking, grant-pipeline reminders, and Cuseum (Zapier) + Square (native) integration. Implementation ~30 days; go-live targeted Q4 FY26–27.</p>
+  </div>
+
+  <div class="card">
+    <h3>🌐 Domain portfolio (9 owned)</h3>
+    <div class="mono">buckeyeimaginationmuseum.org   ← primary canonical
+buckeyeimaginationmuseum.com   → 301 redirect
+theimaginationmuseum.org / .com → possible The Zone landing
+littlebuckeye.org              → legacy redirect (search equity)
+ohioimaginationmuseum.org / .com → defensive
+buckeyechildrensmuseum.org     → defensive
+ohiochildrensmuseum.org        → defensive</div>
+    <p class="notebar">The Zone URL is an open decision: <span class="kbd">.org/zone</span> vs. <span class="kbd">thezone.…org</span> subdomain vs. a distinct domain.</p>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Webmaster cost reconciliation ($788/yr vs $60/hr — same vendor?)</li>
+    <li>Final CRM decision · Constant Contact vs Cuseum email</li>
+    <li>Claude seat decision (Premium/Max for Justin, Team via TechSoup for staff)</li>
+    <li>Direct Cuseum API vs Zapier middleware</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — CRM fix</span>
+    <span class="chip" data-tab="people"><span class="ic">🧑‍🤝‍🧑</span>People — admin roles</span>
+    <span class="chip" data-tab="guardrails"><span class="ic">🛡️</span>Guardrails — access policy</span>
+  </div>
+</section>
+
+<!-- ===================== 11 GUARDRAILS ===================== -->
+<section class="panel" id="guardrails">
+  <div class="phead"><div class="eyebrow">🛡️ Category 11</div><h2>Guardrails</h2>
+    <p class="lede">What BIM protects — AI usage &amp; disclosure, consent, conflict of interest, crisis comms, sensitive-content escalation, and the board-approval list.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill amber">🟡 Pending verification</span></div>
+
+  <div class="card">
+    <h3>🤖 AI usage — the maker-checker rule</h3>
+    <p>AI Teammates operate on the IF System Standard's 8 stages. The pair that never collapses: <b>Stage 5 (AI Review — AI self-checks)</b> → <b>Stage 6 (Human Review — named Reviewer approves before ship)</b>.</p>
+    <div class="grid two">
+      <div><h4>AI Teammates MAY</h4><ul><li>Draft external comms, research the brain, summarize, assemble packets, suggest, coach.</li></ul></div>
+      <div><h4>AI Teammates may NOT</h4><ul><li>Send anything without Stage 6 · make financial/acceptance/hiring decisions · commit BIM to contracts · use a child's image/story without documented consent · cross into 501(c)(3) advertising · operate outside the Mission Brain.</li></ul></div>
+    </div>
+    <div class="callout"><span class="lbl">Drafts only</span>AI Teammates never send external communications directly — they draft for human review. Every run is logged (input, draft, reviewer, decision, output, timestamp) for the Quarterly Health Check.</div>
+  </div>
+
+  <div class="card">
+    <h3>📣 AI disclosure &amp; sensitive content</h3>
+    <div class="grid two">
+      <div><h4>Disclose AI involvement</h4><ul>
+        <li><b>Yes:</b> donor letters (footer), grant narratives, AI-generated annual-report sections, AI imagery of people.</li>
+        <li><b>No (industry standard):</b> marketing copy, sponsor announcements, press releases, internal board packets.</li>
+      </ul></div>
+      <div><h4>Auto-escalate (no publish without review)</h4><ul>
+        <li>Anything involving a named minor; disability/mental-health/medical info; race/religion/orientation/politics; sponsor/donor in negative context; non-public financials; personnel info; legal/IRS matters; AI imagery of people; unclear/expired consent.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔐 Consent, COI &amp; crisis</h3>
+    <ul>
+      <li><b>Photo/story consent:</b> the 2026 Parental Waiver includes opt-in media release. Never use a child's image/story in donor materials without the opt-in on file + current-year recheck + signed Story Collection consent for named stories.</li>
+      <li><b>Conflict of interest:</b> disclose at hire, annually, and at point of decision. Surfaced family relations: Skeen (Andrea/Amanda/Kimberlyn), Monroy (Lupe/April). The 990 confirms BIM <b>already has</b> a COI, whistleblower, and document-retention policy — refresh, don't rebuild.</li>
+      <li><b>Crisis comms:</b> first responder per escalation matrix → notify Justin within 1 hr → Justin + board chair assess within 4 hrs → only Justin (or designee) speaks externally → incident logged within 24 hrs.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🚨 Board approval required (before AI Systems ship)</h3>
+    <div class="grid two">
+      <div><h4>Genuinely new</h4><ul>
+        <li>AI Usage Policy · AI Disclosure Policy · AI-Generated Imagery Policy</li>
+        <li>Crisis Communications Plan · Sensitive Content Categories</li>
+        <li>Gift Acceptance Policy · Sponsorship Tier Policy v2 · Reviewer Matrix v2 · Principal-gift threshold</li>
+      </ul></div>
+      <div><h4>Refresh existing (per 990)</h4><ul>
+        <li>Conflict of Interest Policy</li>
+        <li>Whistleblower guardrails</li>
+        <li>Document retention</li>
+      </ul></div>
+    </div>
+    <div class="callout warn"><span class="lbl">Real gaps the 990 surfaces</span>No independent audit (CPA-compiled only) · ED/officer comp not reviewed by independent persons with comparability data · 990 not posted to BIM's own website ("upon request" only).</div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Schedule the board ratification batch (likely 1–2 meetings)</li>
+    <li>Share text of existing COI / whistleblower / retention policies to refresh</li>
+    <li>Confirm sensitive-content escalation thresholds</li>
+    <li>Confirm photo/media release covers AI imagery use cases</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="people"><span class="ic">🧑‍🤝‍🧑</span>People — reviewer/escalation</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — gift acceptance</span>
+    <span class="chip" data-tab="voice"><span class="ic">🗣️</span>Voice — banned words</span>
+    <span class="chip" data-tab="rhythms"><span class="ic">🗓️</span>Rhythms — health checks</span>
+  </div>
+</section>
+
+<!-- ===================== 12 RHYTHMS ===================== -->
+<section class="panel" id="rhythms">
+  <div class="phead"><div class="eyebrow">🗓️ Category 12</div><h2>Rhythms</h2>
+    <p class="lede">How BIM operates in time — the fiscal calendar, meeting cadences, reporting deadlines, and the Quarterly Health Check.</p></div>
+  <div class="statusline"><span class="pill green">🟢 Draft complete</span><span class="pill green">🟢 Phase 1 complete</span></div>
+
+  <div class="card">
+    <h3>📅 Fiscal-year cycle <span class="tag green">July 1 – June 30</span></h3>
+    <div class="grid four">
+      <div class="stat accent-green"><div class="n">Q1</div><div class="l">Jul–Sep · Summer Camp, board chair handoff, planning kickoff</div></div>
+      <div class="stat accent-blue"><div class="n">Q2</div><div class="l">Oct–Dec · holiday, year-end giving, 990 by Nov 15</div></div>
+      <div class="stat accent-amber"><div class="n">Q3</div><div class="l">Jan–Mar · sponsorship renewals, grant peak, mid-year board</div></div>
+      <div class="stat accent-purple"><div class="n">Q4</div><div class="l">Apr–Jun · field-trip surge, fiscal close, camp registration</div></div>
+    </div>
+    <div class="callout"><span class="lbl">The single most important rhythm</span><b>Q3 sponsorship renewal cycle begins in January.</b> 3-year terms (5 for Official Partner), 15% renewal discount on 5-yr first renewals, 50% early-termination penalty. It overlaps grant peak + mid-year board — Justin's busiest stretch.</div>
+  </div>
+
+  <div class="card">
+    <h3>⏰ Reporting deadlines (high-leverage)</h3>
+    <div class="scroll"><table>
+      <tr><th>What</th><th>Cadence</th><th>Next due</th></tr>
+      <tr><td>IRS Form 990</td><td>Annual (4.5 mo post-FY)</td><td><b>Nov 15, 2026</b></td></tr>
+      <tr><td>Donor tax receipts</td><td>Annual</td><td>Jan 31, 2027</td></tr>
+      <tr><td>Major donor impact letters</td><td>Annual</td><td>Dec 2026</td></tr>
+      <tr><td>Sponsor renewal conversations</td><td>Annual Q3</td><td>Jan–Mar 2027</td></tr>
+      <tr><td>Quarterly KPI dashboard</td><td>Quarterly</td><td>Sep 30, 2026</td></tr>
+      <tr><td>Member e-newsletter</td><td>Monthly</td><td>Monthly</td></tr>
+    </table></div>
+    <p class="notebar">Tax preparer: Banks &amp; Associates CPA's LLC. No independent audit. Files with Ohio only.</p>
+  </div>
+
+  <div class="card">
+    <h3>🤝 Key partnership cadences</h3>
+    <ul>
+      <li><b>COSI coaching</b> — weekly (alternating Mon/Tue), Dr. Frederick Bertley; currently locking vision/mission/values.</li>
+      <li><b>Vinyl engagement</b> — bi-weekly through ~Jan 2027 (16 meetings).</li>
+      <li><b>Emerson Technologies</b> — recurring intensive (STEM Lab + AR build).</li>
+      <li><b>Daily ops</b> — Justin + April informal verbal sync. Board cadence still TBD.</li>
+    </ul>
+    <details><summary>Weekly programming rhythm</summary><div class="dbody"><div class="scroll"><table>
+      <tr><th>Day</th><th>Program</th><th>Lead</th></tr>
+      <tr><td>Tue–Fri AM</td><td>Museum Mornings (3-hr drop-off)</td><td>Programs team</td></tr>
+      <tr><td>Thu 10:45–11:15</td><td>Pioneer Performing Arts</td><td>TBD</td></tr>
+      <tr><td>Thu + Fri 11–2</td><td>Arts &amp; Crafts</td><td>Beth Hostettler</td></tr>
+      <tr><td>Fri 10:15–10:45</td><td>Music &amp; Movement</td><td>Mark Koehler</td></tr>
+      <tr><td>Sat + Sun</td><td>Open hours + 2–3 parties typical</td><td>Front desk + programs</td></tr>
+    </table></div></div></details>
+  </div>
+
+  <div class="card">
+    <h3>🩺 Quarterly Health Check <span class="tag green">IF System Standard</span></h3>
+    <p>Every active AI System gets a 30–60 min Health Check every 90 days, fiscal-aligned (Sep 30 · Dec 31 · Mar 31 · Jun 30). The rubric surfaces <b>drift</b> (is the edit-rate stable?), <b>reviewer load</b>, and <b>Mission Brain freshness</b>, rating each system 🟢 Healthy / 🟡 Drift / 🔴 Broken. If BIM stands up 5 systems that's ~20 checks/year — another reason the Development Director hire matters.</p>
+    <div class="callout"><span class="lbl">🟢 Phase 1 complete</span>Identity ✅ Programs ✅ Impact ✅ Revenue ✅ Audiences ✅ People ✅ Voice ✅ Brand ✅ Strategy ✅ Stack ✅ Guardrails ✅ Rhythms ✅ — Next: Justin's verification pass, then Phase 2 (recommended first Teammate: <b>AI Chief of Staff Associate</b> to support the Nov 15, 2026 990 narrative).</div>
+  </div>
+
+  <div class="verify"><h4>🟡 Open items for Justin</h4><ol>
+    <li>Board meeting cadence + standing date</li>
+    <li>Ohio Secretary of State filing date · audit cycle</li>
+    <li>Project Passport funder reporting cycle</li>
+    <li>Annual report publication · member e-newsletter owner</li>
+  </ol></div>
+
+  <div class="xrefs"><div class="lbl">Cross-references</div>
+    <span class="chip" data-tab="strategy"><span class="ic">🧭</span>Strategy — operating plan</span>
+    <span class="chip" data-tab="revenue"><span class="ic">💰</span>Revenue — Q3 renewals</span>
+    <span class="chip" data-tab="guardrails"><span class="ic">🛡️</span>Guardrails — health check governance</span>
+  </div>
+</section>
+
+
+<!-- ===================== RESOURCES ===================== -->
+<section class="panel" id="resources">
+  <div class="phead">
+    <div class="eyebrow">Mission Brain Sources</div>
+    <h2>Source Library</h2>
+    <p class="lede">Every source document, folder, and reference behind the Mission Brain. Drive docs open in Google Docs; folders open in Google Drive.</p>
+  </div>
+
+  <div class="card">
+    <h3>📄 Synthesized source documents <span class="tag green">Drive</span></h3>
+    <p class="notebar">The verified reference docs that anchor the brain — in <span class="kbd">/Mission Brain Sources/</span>.</p>
+    <div class="reslist">
+      <div class="resrow"><div class="ic">🧾</div><div class="meta"><div class="t">990 FY24–25 Reference</div><div class="d">Verified legal standing, funding mix, 5-year trajectory, balance sheet.</div></div><div class="go"><a href="https://docs.google.com/document/d/1GgDsJOgqnNotTj3UUmX1BlSTcxuzloXwDUmsWCKUljw/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🏷️</div><div class="meta"><div class="t">Current Sponsor Footprint</div><div class="d">22+ active sponsors mapped by room &amp; exhibit.</div></div><div class="go"><a href="https://docs.google.com/document/d/17yuqDTzqC01zl5-ZlYxSW3NF51a-f3hskTE_ppyjhFM/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🧑</div><div class="meta"><div class="t">Justin Ross — Executive Director Bio</div><div class="d">Background, operating style, AI tool stack, succession plan.</div></div><div class="go"><a href="https://docs.google.com/document/d/1y1dm5uF667TgylMjymLZs4iGYddk27zdi2RmxmMtxgU/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🗓️</div><div class="meta"><div class="t">Annual Operating Calendar</div><div class="d">Fiscal-year cycle, Q1–Q4 rhythms.</div></div><div class="go"><a href="https://docs.google.com/document/d/1ZQ6Ir_x5GYpnzCSYLpHoc-g0EXNXGwhZfu6pXmFlPJU/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">⏰</div><div class="meta"><div class="t">Reporting Deadlines Tracker</div><div class="d">990, Ohio filings, funder/donor/member reporting.</div></div><div class="go"><a href="https://docs.google.com/document/d/1YNsxdRxG2kjGPeMM7G3LlWUnjkHtUlE5NW4nAYitwnI/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🩺</div><div class="meta"><div class="t">Quarterly Health Check Calendar</div><div class="d">IF System Standard 90-day cadence + full rubric.</div></div><div class="go"><a href="https://docs.google.com/document/d/1JThXZ37rH6BFeEzBmbuKyapdoOUxb-E-3yxVBIL-px0/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🤝</div><div class="meta"><div class="t">Meeting Cadences Reference</div><div class="d">Every recurring meeting with owner + AI touchpoints.</div></div><div class="go"><a href="https://docs.google.com/document/d/1rrxuOL4GcQbTKz_xZmkHg5m5GuB8HiLDy92gYTYPHvA/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🔀</div><div class="meta"><div class="t">Wellspring → Mission Brain Crosswalk</div><div class="d">How Justin's hub maps into the 12 categories.</div></div><div class="go"><a href="https://docs.google.com/document/d/1QGL-HHmc55hfVpEy_uQfUDx0RHKFtYhk31QG_adGVcA/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">✅</div><div class="meta"><div class="t">Verification Report vs. Justin's Wellspring</div><div class="d">What's confirmed vs. open against the source hub.</div></div><div class="go"><a href="https://docs.google.com/document/d/1IfNDFrthrHEoE7NIUayqzjlzrpRpShcZUVCTVX_ml3E/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">⚙️</div><div class="meta"><div class="t">Org Context</div><div class="d">Install context — org, champion, fiscal year, folders.</div></div><div class="go"><a href="https://docs.google.com/document/d/1aqRo2vfw8j7mOIK0i-X-1ShdcZk0isBmgewBKw6w9hQ/edit" target="_blank" rel="noopener">Open ↗</a></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📁 Program &amp; operations source folders <span class="tag green">Drive</span></h3>
+    <p class="notebar">Pulled from the Programs Sources Index — the raw assets behind program drafts.</p>
+    <div class="reslist">
+      <div class="resrow"><div class="ic">📁</div><div class="meta"><div class="t">Programming folder</div><div class="d">Museum Mornings assets, Craft Room, Messenger creations.</div></div><div class="go"><a href="https://drive.google.com/drive/folders/1o_IyJfYX3ZeTyfTd_yoHzl_PKPq21UN9" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🏕️</div><div class="meta"><div class="t">Camp Flyer 2026</div><div class="d">"Inside Out" theme · July 13–17 + July 20–24.</div></div><div class="go"><a href="https://drive.google.com/file/d/1Gs9yzGYrAnEqMwFx8kWECKwE0VG8nSI1/view" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">📁</div><div class="meta"><div class="t">Events folder</div><div class="d">80's Adult Night, Country Throwdown, PJ Party, Family Glow Night.</div></div><div class="go"><a href="https://drive.google.com/drive/folders/1D_HRD-yMaVWqWOOGn1Uxq5gYlORnNw0W" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">📁</div><div class="meta"><div class="t">Campaigns folder</div><div class="d">Holiday Kick-Off, Black Friday Sale.</div></div><div class="go"><a href="https://drive.google.com/drive/folders/1z-UVmIcGpdhES7wN57IGBPpbFkqMJGlI" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">📄</div><div class="meta"><div class="t">Front Desk Flyer 1</div><div class="d">Admission, hours, weekly programs, birthday pricing.</div></div><div class="go"><a href="https://drive.google.com/file/d/1LkXmCIAzECQLMk-Vyh9jEQ1G45aq5hZt/view" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">📄</div><div class="meta"><div class="t">Front Desk Flyer 2</div><div class="d">Membership tiers.</div></div><div class="go"><a href="https://drive.google.com/file/d/1V23F4rW-ncLEI2NvcawtCqdClNja9m9v/view" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">📁</div><div class="meta"><div class="t">Policies + Procedures folder</div><div class="d">Rules of Play, Parental Waiver 2026, Sick Guest, Inclement Weather, Media Release.</div></div><div class="go"><a href="https://drive.google.com/drive/folders/1nK2rJyWyXH4kviYkxb9TKFjYAasrTZbU" target="_blank" rel="noopener">Open ↗</a></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌐 Website &amp; public references</h3>
+    <div class="reslist">
+      <div class="resrow"><div class="ic">🏛️</div><div class="meta"><div class="t">BIM website</div><div class="d">buckeyeimaginationmuseum.org — primary canonical domain.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🗺️</div><div class="meta"><div class="t">Plan Your Visit</div><div class="d">Hours, admission, accessibility.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/visit/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🎟️</div><div class="meta"><div class="t">Programs / Classes</div><div class="d">Weekly classes &amp; programs.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/classes/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🎉</div><div class="meta"><div class="t">Nights at the Museum</div><div class="d">After-hours event series.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/nights-at-the-museum/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🎂</div><div class="meta"><div class="t">Birthday Parties</div><div class="d">Booking &amp; pricing.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/birthday-parties/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">♿</div><div class="meta"><div class="t">Accessibility Resources</div><div class="d">Sensory accommodations, physical access.</div></div><div class="go"><a href="https://buckeyeimaginationmuseum.org/accessibility-resources/" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🔍</div><div class="meta"><div class="t">Guidestar profile</div><div class="d">Exchange Partners in Trust · EIN 27-3014824.</div></div><div class="go"><a href="http://www.guidestar.org/profile/27-3014824" target="_blank" rel="noopener">Open ↗</a></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧠 Notion — the live brain</h3>
+    <div class="reslist">
+      <div class="resrow"><div class="ic">🧠</div><div class="meta"><div class="t">Mission Brain hub</div><div class="d">The canonical Notion home for all 12 categories.</div></div><div class="go"><a href="https://www.notion.so/Buckeye-Imagination-Museum-Mission-Brain-36e3b04a809a818abffad256bf9c0c72" target="_blank" rel="noopener">Open ↗</a></div></div>
+      <div class="resrow"><div class="ic">🏗️</div><div class="meta"><div class="t">Build Reference Page</div><div class="d">Verification Queue, Decision Log, Session History, Document Catalog.</div></div><div class="go"><a href="https://app.notion.com/p/36e3b04a809a81879c51e474ec179dfb" target="_blank" rel="noopener">Open ↗</a></div></div>
+    </div>
+  </div>
+</section>
+
+    </div><!-- /wrap -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+(function(){
+  var titles={overview:"Overview",resources:"Source Library",identity:"01 · Identity",programs:"02 · Programs",
+    impact:"03 · Impact",revenue:"04 · Revenue",audiences:"05 · Audiences",people:"06 · People",voice:"07 · Voice",
+    brand:"08 · Brand",strategy:"09 · Strategy",stack:"10 · Stack",guardrails:"11 · Guardrails",rhythms:"12 · Rhythms"};
+  var panels=document.querySelectorAll('.panel');
+  var navItems=document.querySelectorAll('.nav-item');
+  function show(tab){
+    if(!titles[tab]) tab='overview';
+    panels.forEach(function(p){p.classList.toggle('active',p.id===tab)});
+    navItems.forEach(function(n){n.classList.toggle('active',n.getAttribute('data-tab')===tab)});
+    var c=document.getElementById('crumb-now'); if(c) c.textContent=titles[tab];
+    document.querySelector('.main').scrollTop=0;
+    window.scrollTo(0,0);
+  }
+  // any element with data-tab acts as a link (nav, cards, chips)
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-tab]');
+    if(t){e.preventDefault(); var tab=t.getAttribute('data-tab');
+      if(location.hash!=='#'+tab){location.hash=tab;} else {show(tab);} }
+  });
+  window.addEventListener('hashchange',function(){show(location.hash.replace('#',''))});
+  // search filter
+  var search=document.getElementById('nav-search');
+  if(search){search.addEventListener('input',function(){
+    var q=this.value.toLowerCase();
+    navItems.forEach(function(n){
+      var txt=n.textContent.toLowerCase();
+      n.style.display=(!q||txt.indexOf(q)>-1)?'':'none';
+    });
+  });}
+  show(location.hash.replace('#','')||'overview');
+})();
+</script>
+</body>
+</html>
